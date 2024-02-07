@@ -14,7 +14,7 @@ class Simple_DES:
         self.IP_inv = [4, 1, 3, 5, 7, 2, 8, 6]
 
         self.S0 = [[1, 0, 3, 2], [3, 2, 1, 0], [0, 2, 1, 3], [3, 1, 3, 2]]
-        self.S1 = [[0, 1, 2, 3], [2, 0, 1, 3], [3, 0, 1, 2], [2, 1, 0, 3]]
+        self.S1 = [[0, 1, 2, 3], [2, 0, 1, 3], [3, 0, 1, 0], [2, 1, 0, 3]]
 
     def key_generation(self):
         key_ = [self.key[self.P10[i] - 1] for i in range(10)]
