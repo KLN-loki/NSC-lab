@@ -1,0 +1,217 @@
+-- CEASER CIPHER --
+
+def encrypt(s,n):
+    st=""
+    for i in s:
+        if i.isupper():
+            st+=chr((ord(i)+n-65)%26+65)
+        elif i.islower():
+            st+=chr((ord(i)+n-97)%26+65)
+        elif 48<=ord(i)<=57:
+            st+=chr((ord(i)+n-48)%10+48)
+        else:
+            st+=i
+    return st
+
+def decrypt(s,n):
+    st=""
+    for i in s:
+        if i.isupper():
+            st+=chr((ord(i)-n-65)%26+97)
+        elif 48<=ord(i)<=57:
+            st+=chr((ord(i)-n-48)%10+48)
+        else:
+            st+=i
+    return st
+
+s=input("Enter the plain text:")
+n=int(input("Enter number of shifts:"))
+st=encrypt(s,n)
+print("The cipher text is:"+st)
+dst=decrypt(st,n)
+print("The original text is:"+dst)  
+
+
+
+
+
+
+-- DIFFIE HELLMAN KEY EXCHANGE --
+
+def mod_exp(base, exponent, modulus):
+    result = 1
+    base = base % modulus
+    while exponent > 0:
+        if exponent % 2 == 1:
+            result = (result * base) % modulus
+        exponent = exponent // 2
+        base = (base * base) % modulus
+    return result
+
+
+def diffie_hellman():
+
+    p = int(input("Enter p: "))
+    g = int(input("Enter primitive root : "))
+
+    a = int(input("Enter A's secret key: "))
+
+    b = int(input("Enter B's secret key: "))
+
+    A = mod_exp(g, a, p)
+
+    B = mod_exp(g, b, p)
+
+    print("A Sent to B : ", A)
+    print("B Sent to A : ", B)
+
+    secret_key_alice = mod_exp(B, a, p)
+
+    secret_key_bob = mod_exp(A, b, p)
+
+    print("Shared secret key for A:", secret_key_alice)
+    print("Shared secret key for B:", secret_key_bob)
+
+
+diffie_hellman()
+
+
+
+
+
+
+-- VERNAM CIPHER -- 
+
+
+
+
+
+
+
+-- MILLER RABIN --
+
+import random
+
+def is_prime(n, k=5):
+    """
+    Miller-Rabin primality test.
+
+    Parameters:
+    - n: The number to be tested for primality.
+    - k: The number of rounds of testing. Higher values of k increase the accuracy.
+
+    Returns:
+    - True if n is likely to be prime, False otherwise.
+    """
+    if n <= 1:
+        return False
+    if n == 2 or n == 3:
+        return True
+    if n % 2 == 0:
+        return False
+
+    # Write n as 2^r * d + 1
+    r, d = 0, n - 1
+    while d % 2 == 0:
+        r += 1
+        d //= 2
+
+    # Witness loop
+    for _ in range(k):
+        a = random.randint(2, n - 2)
+        x = pow(a, d, n)
+
+        if x == 1 or x == n - 1:
+            continue
+
+        for _ in range(r - 1):
+            x = pow(x, 2, n)
+            if x == n - 1:
+                break
+        else:
+            return False  # Not prime
+
+    return True  # Likely prime
+
+# Example usage
+number_to_test = 1031
+rounds_of_testing = 5
+
+if is_prime(number_to_test, rounds_of_testing):
+    print(f"{number_to_test} is likely to be a prime number.")
+else:
+    print(f"{number_to_test} is not a prime number.")
+
+
+
+
+
+
+
+-- RAIL FENCE CIPHER --
+
+def  encrypt_rail_fence(text, key):
+    rail = [['\n' for _ in range(len(text))] for _ in range(key)]
+    dir_down, row, col = False, 0, 0
+
+    for char in text:
+        if (row == 0) or (row == key - 1):
+            dir_down = not dir_down
+        rail[row][col] = char
+        col += 1
+        row += 1 if dir_down else -1
+
+    return ''.join(char for row in rail for char in row if char != '\n')
+
+def decrypt_rail_fence(cipher, key):
+    rail = [['\n' for _ in range(len(cipher))] for _ in range(key)]
+    dir_down, row, col = None, 0, 0
+
+    for i in range(len(cipher)):
+        if row == 0:
+            dir_down = True
+        if row == key - 1:
+            dir_down = False
+        rail[row][col] = '*'
+        col += 1
+        row += 1 if dir_down else -1
+
+    index = 0
+    for i in range(key):
+        for j in range(len(cipher)):
+            if rail[i][j] == '*' and index < len(cipher):
+                rail[i][j] = cipher[index]
+                index += 1
+
+    result = []
+    row, col = 0, 0
+    for i in range(len(cipher)):
+        if row == 0:
+            dir_down = True
+        if row == key - 1:
+            dir_down = False
+        if rail[row][col] != '*':
+            result.append(rail[row][col])
+            col += 1
+        row += 1 if dir_down else -1
+
+    return ''.join(result)
+
+# Example usage with user input
+plaintext = input("Enter your plain text: ")
+key = int(input("Enter your key: "))
+
+encrypted_text = encrypt_rail_fence(plaintext, key)
+print("Encrypted Text:", encrypted_text)
+
+decrypted_text = decrypt_rail_fence(encrypted_text, key)
+print("Decrypted Text:", decrypted_text)
+
+
+
+
+
+
+
+
+-- 
