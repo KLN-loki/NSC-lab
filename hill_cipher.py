@@ -6,6 +6,7 @@ from sympy import Matrix
 plainText = input("Enter the plain text: ")
 key = input("Enter the key: ")
 
+
 key_length = len(key)
 text_length = len(plainText)
 key_matrix_dim = int(sqrt(key_length))
